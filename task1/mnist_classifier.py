@@ -1,0 +1,19 @@
+from classifiers import RandomForestMnistClassifier
+
+
+CLASSIFIERS: dict[str, type] = {
+    "rf":  RandomForestMnistClassifier
+}
+
+
+class MnistClassifier:
+    def __init__(self, algorithm: str, **kwargs):
+        if algorithm not in CLASSIFIERS:
+            raise ValueError(f"Unsupported algorithm '{algorithm}'. Supported algorithms: {list(CLASSIFIERS.keys())}")
+        self._classifier = CLASSIFIERS[algorithm](**kwargs)
+        
+    def train(self, X_train, y_train):
+        self._classifier.train(X_train, y_train)
+        
+    def predict(self, X_test):
+        return self._classifier.predict(X_test)
