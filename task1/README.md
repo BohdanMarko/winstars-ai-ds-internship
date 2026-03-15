@@ -20,8 +20,8 @@ task1/
 │   ├── random_forest.py    # RF via sklearn
 │   ├── feed_forward_nn.py  # MLP via PyTorch
 │   └── cnn.py              # CNN via PyTorch
-├── tests/
-│   └── test_classifiers.py
+├── test_data/              # Custom handwritten digit images for testing
+│   └── test_*.png
 ├── demo.ipynb              # Training, evaluation, comparison
 ├── requirements.txt
 └── README.md
@@ -63,7 +63,7 @@ Then in VS Code or Jupyter, select the **"Python 3.10 (venv)"** kernel when open
 ```python
 from mnist_classifier import MnistClassifier
 
-clf = MnistClassifier("cnn")       # or "rf", "ffnn"
+clf = MnistClassifier("cnn") # or "rf", "ffnn"
 clf.train(X_train, y_train)
 preds = clf.predict(X_test)
 ```

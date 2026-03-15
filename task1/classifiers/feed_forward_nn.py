@@ -105,8 +105,8 @@ class FeedForwardNNMnistClassifier(MnistClassifierInterface):
         optimizer = torch.optim.Adam(self._net.parameters(), lr=self._lr, weight_decay=1e-4)
         criterion = nn.CrossEntropyLoss()
 
-        self._net.train()
         for epoch in range(self._epochs):
+            self._net.train()
             total_loss = 0.0
             for X_batch, y_batch in loader:
                 X_batch, y_batch = X_batch.to(self._device), y_batch.to(self._device)
