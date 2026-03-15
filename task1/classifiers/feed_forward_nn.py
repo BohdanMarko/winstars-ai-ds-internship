@@ -7,18 +7,21 @@ from interface import MnistClassifierInterface
 
 
 class _FeedForwardNet(nn.Module):
-    """MLP architecture: 784 → 512 → 256 → 128 → 10.
+    """Fully-connected (MLP) network: 784 -> 512 -> 256 -> 128 -> 10.
 
-    Layer dimensions form a narrowing funnel: 784 (raw pixels) is expanded
-    to 512 to capture diverse low-level features, then progressively
-    compressed through 256 and 128, forcing the network to distill only
-    the most discriminative patterns before the 10-class output.
+    Every neuron in a layer is connected to every neuron in the next layer
+    (hence "fully-connected"). The network sees each image as a flat vector
+    of 784 pixels - it has no notion of spatial structure.
 
-    Each hidden block uses four components:
-        - Linear:      weighted sum of all inputs (y = Wx + b)
-        - BatchNorm1d: normalises activations to mean 0, std 1 per batch, stabilising and accelerating training
-        - ReLU:        non-linear activation f(x) = max(0, x), enables the network to learn complex (non-linear) decision boundaries
-        - Dropout:     randomly zeroes a fraction of neurons during training, prevents overfitting by forcing redundant representations
+    Architecture narrows progressively (512 -> 256 -> 128), forcing the
+    network to compress raw pixel information into increasingly abstract
+    features before the 10-class output.
+
+    Each hidden block: Linear -> BatchNorm1d -> ReLU -> Dropout
+      - Linear:      learnable weighted sum (y = Wx + b)
+      - BatchNorm1d: normalises activations per batch -> stabilises training
+      - ReLU:        max(0, x) — non-linearity for complex decision boundaries
+      - Dropout:     randomly zeroes neurons during training -> reduces overfitting
     """
 
     def __init__(self, dropout: float = 0.3):
@@ -47,7 +50,12 @@ class _FeedForwardNet(nn.Module):
 class FeedForwardNNMnistClassifier(MnistClassifierInterface):
     """MNIST classifier using a Feed-Forward Neural Network (MLP).
 
-    Normalises input from [0, 255] to [0, 1] internally.
+    Treats each image as a flat 784-d vector — simple and fast, but ignores
+    spatial pixel relationships (unlike CNN). Normalises [0, 255] -> [0, 1]
+    internally.
+
+    Training: mini-batch gradient descent with Adam optimiser and
+    CrossEntropyLoss (expects raw logits, applies softmax internally).
     """
 
     def __init__(
@@ -59,6 +67,15 @@ class FeedForwardNNMnistClassifier(MnistClassifierInterface):
         random_state: int = 67,
         device: str | None = None,
     ):
+        """
+        Args:
+            epochs: Full passes over the training set.
+            batch_size: Samples per gradient update.
+            learning_rate: Adam step size.
+            dropout: Fraction of neurons randomly zeroed during training.
+            random_state: Seed for weight initialisation reproducibility.
+            device: "cuda", "mps", or "cpu" (auto-detected if None).
+        """
         torch.manual_seed(random_state)
 
         if device is None:
@@ -77,6 +94,10 @@ class FeedForwardNNMnistClassifier(MnistClassifierInterface):
         self._is_trained = False
 
     def train(self, X_train: np.ndarray, y_train: np.ndarray) -> None:
+        """Normalise pixels to [0,1], then run Adam optimisation for self._epochs.
+
+        Uses weight_decay=1e-4 (L2 regularization) to penalise large weights.
+        """
         X = torch.FloatTensor(X_train / 255.0)
         y = torch.LongTensor(y_train)
         loader = DataLoader(TensorDataset(X, y), batch_size=self._batch_size, shuffle=True)
@@ -101,6 +122,10 @@ class FeedForwardNNMnistClassifier(MnistClassifierInterface):
         self._is_trained = True
 
     def predict(self, X_test: np.ndarray) -> np.ndarray:
+        """Forward pass in eval mode (BatchNorm uses running stats, Dropout off).
+
+        Returns argmax of raw logits -> predicted digit per sample.
+        """
         if not self._is_trained:
             raise RuntimeError("Model is not trained yet. Call train() before predict().")
 
