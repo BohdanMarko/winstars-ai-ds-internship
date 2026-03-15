@@ -1,8 +1,10 @@
 from classifiers import RandomForestMnistClassifier
+from task1.classifiers.feed_forward_nn import FeedForwardNNMnistClassifier
 
 
 CLASSIFIERS: dict[str, type] = {
-    "rf":  RandomForestMnistClassifier
+    "rf":  RandomForestMnistClassifier,
+    "ffnn": FeedForwardNNMnistClassifier,
 }
 
 
