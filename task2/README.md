@@ -35,7 +35,7 @@ venv\Scripts\activate
 pip install -r task2/requirements.txt
 ```
 
-**Register the venv as a Jupyter kernel (if not done for task1):**
+**Register the venv as a Jupyter kernel (ignore if done during task 1):**
 ```bash
 pip install ipykernel
 python -m ipykernel install --user --name=venv --display-name "Python 3.10 (venv)"
