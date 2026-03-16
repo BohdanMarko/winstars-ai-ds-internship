@@ -14,6 +14,34 @@ ML pipeline that combines Named Entity Recognition (NER) and image classificatio
 **Animals-10** (Kaggle) - ~28k images across 10 classes:
 butterfly, cat, chicken, cow, dog, elephant, horse, sheep, spider, squirrel
 
+## How It Works
+
+1. `ner/dataset.py` - generates synthetic training data
+2. `ner/train.py` - fine-tunes BERT on that data
+3. `ner/inference.py` - extracts animal name from user text
+4. `image_classifier/train.py` - fine-tunes ResNet-50 on Animals-10
+5. `image_classifier/inference.py` - classifies animal in the image
+6. `pipeline.py` - compares NER output with classifier output -> `True` / `False`
+
+### NER Dataset (`ner/dataset.py`)
+
+Generates a synthetic BIO-tagged dataset for training the NER model. Since no
+ready-made dataset of animal-annotated sentences exists, we create one from
+sentence templates combined with animal names and their synonyms.
+
+Each word in a sentence gets a BIO tag:
+- **B-ANIMAL** - first word of an animal entity
+- **I-ANIMAL** - continuation of the entity (for multi-word names)
+- **O** - not an entity
+
+Example: `"I can see a cat."` → `[O, O, O, O, B-ANIMAL]`
+
+The dataset is generated in memory during training (not saved to disk). A fixed
+random seed ensures reproducibility. The data is split into two parts:
+- **Train** (~85%) - used to teach the model
+- **Val** (validation, ~15%) - held-out data the model never trains on, used to
+  measure how well it generalizes to unseen examples
+
 ## Project Structure
 
 ## Requirements
