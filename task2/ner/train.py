@@ -5,6 +5,7 @@ to 3 labels (O, B-ANIMAL, I-ANIMAL) while keeping the BERT encoder
 weights that already understand NER patterns.
 """
 
+from pathlib import Path
 import numpy as np
 from seqeval.metrics import f1_score, precision_score, recall_score
 from transformers import (
@@ -95,4 +96,9 @@ def train(config: NERConfig) -> None:
 
 
 if __name__ == "__main__":
-    train(NERConfig())
+    config = NERConfig()
+    model_path = Path(config.output_dir) / "model.safetensors"
+    if model_path.exists():
+        print(f"Trained model already exists at {config.output_dir}, skipping training.")
+    else:
+        train(config)

@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.pth
 *.pkl
+checkpoint-*/
+training_args.bin
