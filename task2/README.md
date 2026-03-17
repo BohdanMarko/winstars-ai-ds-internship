@@ -42,6 +42,21 @@ random seed ensures reproducibility. The data is split into two parts:
 - **Val** (validation, ~15%) - held-out data the model never trains on, used to
   measure how well it generalizes to unseen examples
 
+### Image Classifier (`image_classifier/`)
+
+Fine-tunes a pre-trained ResNet-50 (ImageNet) on Animals-10 using transfer learning
+with a two-phase approach:
+
+- **Phase 1 (epochs 1-5)**: Backbone frozen, only the classification head trains.
+  The head learns to map ResNet's visual features to our 10 animal classes.
+- **Phase 2 (epochs 6-20)**: Full fine-tuning with differential learning rates —
+  backbone gets 10x lower lr (`1e-4`) to gently adjust, head continues at `1e-3`.
+
+The dataset is downloaded automatically via `kagglehub`. Italian folder names are
+translated to English. Images are split into train/val (85%/15%) with stratified
+sampling. Training augmentations (random crop, flip, color jitter) help prevent
+overfitting.
+
 ## Project Structure
 
 ## Requirements
