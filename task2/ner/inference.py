@@ -5,6 +5,7 @@ python -m ner.inference
 
 import torch
 from transformers import AutoModelForTokenClassification, AutoTokenizer
+from common import get_device
 from ner.dataset import SYNONYMS
 
 
@@ -14,16 +15,7 @@ class NERPredictor:
     def __init__(self, model_path: str = "models/ner", device: str | None = None):
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForTokenClassification.from_pretrained(model_path)
-
-        if device is None:
-            if torch.cuda.is_available():
-                device = "cuda"
-            elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-                device = "mps"
-            else:
-                device = "cpu"
-
-        self.device = device
+        self.device = get_device(device)
         self.model.to(self.device)
         self.model.eval()
         self.id2label = self.model.config.id2label

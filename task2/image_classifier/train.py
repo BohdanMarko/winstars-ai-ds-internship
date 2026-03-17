@@ -14,6 +14,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchvision.models import resnet50, ResNet50_Weights
+from common import get_device
 from image_classifier.config import ImageClassifierConfig
 from image_classifier.dataset import prepare_dataset, CLASS_NAMES
 
@@ -62,7 +63,7 @@ def train(config: ImageClassifierConfig) -> None:
     torch.manual_seed(config.seed)
     np.random.seed(config.seed)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = get_device()
 
     model = create_model(num_classes=len(CLASS_NAMES), pretrained=config.pretrained)
     model.to(device)

@@ -7,9 +7,7 @@ import random
 from collections import Counter
 from datasets import Dataset
 from ner.config import NERConfig
-
-
-ANIMALS: list[str] = ["butterfly", "cat", "chicken", "cow", "dog", "elephant", "horse", "sheep", "spider", "squirrel"]
+from common import ANIMALS
 
 SYNONYMS: dict[str, str] = {
     "kitty": "cat", 

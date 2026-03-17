@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import torch
 from PIL import Image
+from common import get_device
 from image_classifier.dataset import get_val_transforms
 from image_classifier.train import create_model
 
@@ -27,16 +28,7 @@ class ImageClassifier:
         self.idx_to_class = {v: k for k, v in class_to_idx.items()}
 
         model = create_model(num_classes=len(class_to_idx), pretrained=False)
-
-        if device is None:
-            if torch.cuda.is_available():
-                device = "cuda"
-            elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-                device = "mps"
-            else:
-                device = "cpu"
-
-        self.device = device
+        self.device = get_device(device)
         model.load_state_dict(torch.load(model_path, map_location=self.device))
         model.to(self.device)
         model.eval()

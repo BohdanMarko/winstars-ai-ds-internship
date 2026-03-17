@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader, TensorDataset
-
 from interface import MnistClassifierInterface
+from utils import get_device
 
 
 class _ConvNet(nn.Module):
@@ -93,15 +93,7 @@ class CNNMnistClassifier(MnistClassifierInterface):
             device: Compute device (auto-detected if None).
         """
         torch.manual_seed(random_state)
-
-        if device is None:
-            if torch.cuda.is_available():
-                device = "cuda"
-            elif torch.backends.mps.is_available():
-                device = "mps"
-            else:
-                device = "cpu"
-        self._device = torch.device(device)
+        self._device = get_device(device)
 
         self._epochs = epochs
         self._batch_size = batch_size

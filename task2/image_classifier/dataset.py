@@ -7,24 +7,23 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from sklearn.model_selection import train_test_split
+from common import ANIMALS as CLASS_NAMES
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 TRANSLATE = {
-    "cane": "dog", 
-    "cavallo": "horse", 
+    "cane": "dog",
+    "cavallo": "horse",
     "elefante": "elephant",
-    "farfalla": "butterfly", 
-    "gallina": "chicken", 
+    "farfalla": "butterfly",
+    "gallina": "chicken",
     "gatto": "cat",
-    "mucca": "cow", 
-    "pecora": "sheep", 
+    "mucca": "cow",
+    "pecora": "sheep",
     "ragno": "spider",
     "scoiattolo": "squirrel"
 }
-
-CLASS_NAMES: list[str] = sorted(["butterfly", "cat", "chicken", "cow", "dog", "elephant", "squirrel", "horse", "sheep", "spider"])
 
 
 class _ToRGB:
