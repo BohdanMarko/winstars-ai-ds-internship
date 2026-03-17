@@ -5,5 +5,5 @@ from classifiers.cnn import CNNMnistClassifier
 __all__ = [
     "RandomForestMnistClassifier",
     "FeedForwardNNMnistClassifier",
-    "CNNMnistClassifier",
+    "CNNMnistClassifier"
 ]
