@@ -4,10 +4,12 @@ ML pipeline that combines Named Entity Recognition (NER) and image classificatio
 
 ## Models
 
-| Component | Model | Purpose |
-|-----------|-------|---------|
-| NER | `dslim/bert-base-NER` (fine-tuned) | Extract animal names from text |
-| Image Classifier | ResNet-50 (fine-tuned) | Classify animal in image |
+| Component | Model | Type | Purpose |
+|-----------|-------|------|---------|
+| NER | `dslim/bert-base-NER` (fine-tuned) | Transformer Encoder (BERT) | Extract animal names from text |
+| Image Classifier | ResNet-50 (fine-tuned) | CNN | Classify animal in image |
+
+Both models are **not generative** — they classify, not generate content.
 
 ## Dataset
 
