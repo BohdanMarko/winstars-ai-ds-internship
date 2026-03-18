@@ -14,7 +14,14 @@ KNOWN_CLASSES: set[str] = set(ANIMALS)
 
 
 def normalize_animal_name(name: str) -> str:
-    return name.lower().strip()
+    name = name.lower().strip()
+
+    if name.endswith("ies") and name[:-3] + "y" in KNOWN_CLASSES:
+        name = name[:-3] + "y"
+    elif name.endswith("s") and name[:-1] in KNOWN_CLASSES:
+        name = name[:-1]
+
+    return name
 
 
 class AnimalPipeline:
