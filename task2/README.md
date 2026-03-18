@@ -85,3 +85,35 @@ pip install -r task2/requirements.txt
 pip install ipykernel
 python -m ipykernel install --user --name=venv --display-name "Python 3.10 (venv)"
 ```
+
+## Known Limitations
+
+**NER false positives on rare words.** The NER model is trained on synthetic
+templates, so it may occasionally tag non-animal words as entities in unusual
+contexts ("savanna" in *"A majestic elephant roaming the savanna"*). The
+pipeline filters these out via `KNOWN_CLASSES`, so they don't affect the final
+result, but NER precision could be improved.
+*Fix:* Add more diverse negative examples to the synthetic training data -
+sentences containing location names, plant names, and other nouns that appear
+near animals in natural text. Alternatively, fine-tune on a real-world NER
+dataset with animal annotations.
+
+**Plural synonyms are not resolved.** The NER model resolves singular synonyms
+correctly ("puppy" -> "dog", "kitten" -> "cat"), and `normalize_animal_name()`
+strips plurals of the 10 canonical class names ("dogs" -> "dog"). However,
+**plural synonyms** like "puppies" or "kittens" fall through - "puppy" is not
+in `KNOWN_CLASSES`, so the plural strip has no effect.
+*Fix:* Add a `SYNONYM_MAP` dict in `pipeline.py` that maps synonyms to
+canonical names, and apply it inside `normalize_animal_name()` after plural
+stripping. This would catch "puppies" -> strip "ies" -> "puppy" -> synonym lookup
+-> "dog". Alternatively, include plural forms of synonyms in the NER training
+data so the model learns to resolve them directly.
+
+**Only 10 animal classes.** The image classifier is trained on Animals-10, so
+any animal outside those 10 classes (kangaroo, turtle, penguin) will be
+misclassified as one of the known classes as shown in some examples in demo. The pipeline handles this gracefully for unknown animals in *text* (NER won't recognize them or they'll be filtered by `KNOWN_CLASSES`), but for unknown animals in *images* the classifier will confidently predict the wrong class.
+*Fix:* Add an "unknown" / "other" rejection class, or use a confidence
+threshold combined with entropy - if the classifier's top prediction has low
+confidence or the probability distribution is spread across multiple classes,
+treat it as "unknown" instead of trusting the top-1 prediction. Training on a
+larger dataset with more species would help as well.
